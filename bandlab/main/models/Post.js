@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema({
   caption: {
-    type: String,
-    required: true
+    type: String
   },
-  image: {
-    type: String,
+  imageId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Image',
     required: true
   },
   creator: {
