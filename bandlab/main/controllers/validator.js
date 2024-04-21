@@ -2,6 +2,18 @@ const Image = require('../models/Image');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 
+exports.validateGetPostsParams = async (req, res, next) => {
+  const { prevPostId } = req.body;
+
+  if (prevPostId != "") {
+    const post = await Post.findById(prevPostId);
+    if (!post) {
+      return res.status(400).json({message: "Previous post not found"});
+    }
+  }
+  next();
+};
+
 exports.validateCreatePostParams = async (req, res, next) => {
   const { actor, imageId } = req.body;
   const image = await Image.findById(imageId);
