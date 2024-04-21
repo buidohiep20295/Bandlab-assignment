@@ -4,6 +4,9 @@ const routes = require('./main/routes/routes.js');
 const db = require('./main/config/db.js');
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+
 const PORT = process.env.NODE_DOCKER_PORT || 8080;
 
 mongoose.connect(db.url).then(() => {

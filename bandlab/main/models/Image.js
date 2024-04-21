@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const imageSchema = new mongoose.Schema({
-  originalFileId: {
+  originalImageUrl: {
     type: String,
     required: true
   },
-  jpgFileId: {
+  jpgImageUrl: {
     type: String,
     required: true
   },
