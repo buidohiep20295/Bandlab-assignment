@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const Image = require("../models/Image");
+const Comment = require("../models/Comment");
 const common = require("./common");
 const ObjectId = require("mongoose").Types.ObjectId;
 
@@ -40,7 +41,7 @@ exports.validateCreatePostParams = async (req, res, next) => {
 exports.getPosts = async (req, res) => {
   try {
     const prevPostId = req.query["prevPostId"];
-    const limit = req.query["limit"] ? req.query["limit"] : DEFAULT_GET_POST_LIMIT;
+    const limit = Number(req.query["limit"]) || DEFAULT_GET_POST_LIMIT;
     const queryLimit = Math.min(limit, MAX_GET_POST_LIMIT);
     const posts = await queryPosts(prevPostId, queryLimit);
     const postsWithDetails = await queryPostsDetails(posts);
@@ -76,7 +77,7 @@ async function queryPosts(prevPostId, limit) {
   }
 
   const posts = await Post.find(query).limit(limit).sort({ commentCount: -1, createdAt: -1 });
-  return posts;
+  return posts.map((post) => post._doc);
 
 }
 

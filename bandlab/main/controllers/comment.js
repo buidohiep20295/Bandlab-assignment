@@ -42,7 +42,7 @@ exports.validateDeleteCommentParams = async (req, res, next) => {
     return res.status(400).json({message: "Comment not found"});
   }
   if (comment.creator.toString() != actor) {
-    return res.status(400).json({message: "You can only delete comments created by yourself"});
+    return res.status(403).json({message: "You can only delete comments created by yourself"});
   }
   next();
 }
@@ -51,11 +51,12 @@ exports.deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
     // Delete the comment
-    const comment = await Comment.findById(commentId)
-    await comment.delete();
+    const comment = await Comment.findById(commentId);
+
+    await Comment.findByIdAndDelete(commentId);
 
     // Update the post's comment count
-    await Post.findByIdAndUpdate(comment.commentId, { $inc: { commentCount: -1 } }, { timestamps: false });
+    await Post.findByIdAndUpdate(comment.postId, { $inc: { commentCount: -1 } }, { timestamps: false });
 
     res.json({});
   } catch (err) {

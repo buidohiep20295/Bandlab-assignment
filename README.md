@@ -44,13 +44,14 @@ To support 100 RPS, we could achieve that by horizontal scaling & caching:
 - `AWS S3` storage for store lob data, i.e. images in this case.
 - `AWS lambda` for offloading compute-heavy task like processing image (convert,  resize) from the main server.
 - `Docker` & `Docker Compose` for smooth local development & deployment experience.
+- `Jest` is used for the integration test.  
 
 ## Design overview
 - `Post` is stored with image url, along with its metadata. We don't stored comments inside the post, but have the `commentCount` that will be used for indexing, in order to serve the get posts ordered by the number of comments.
 - `Comment` is stored separately from post. It holds the `postId` to keep the reference back to the original post. We also create a compound index on the `Comment` document which is (`postId`, `createdAt`), so that we can query comments by post and order by the created time.
 - `Image` is also stored as a separated document, because we want to have a layer above the raw image. Doing this allow us to handle other use cases, like convert & serve image with different sizes, formats, or adding permission layer on the image level.
 - `UploadImage` API is a separate API from the create post API. The decision is made because we want the codebase is modular, and upload image API can be reused later (e.g allow comment with image). Doing this also make all the API simple and clean, avoid complicated logic. Of course, by choosing this, client side is more complicated now when they need to handle uploading image & creating post as 2 separated actions.
-- Depending on the actual access pattern, we could optimize the system with some tweaks at the schema level. For example, if the `get posts` API are used most of the time, we could do some kind of data duplication, for example storing IDs of the 2 latest comments of each post directly on the post. We also can store directly the `jpgImageUrl` inside the post for better performance.
+- Depending on the actual access pattern, we could optimize the system with some tweaks at the schema level. For example, if the `get posts` API are used much more often, we could do some kind of data duplication, for example storing IDs of the 2 latest comments of each post directly on the post. We also can store directly the `jpgImageUrl` inside the post for better performance.
 However, doing that would also need to pay the tradeoff, because data duplication need to be handled carefully when the original source of data changes (i.e. when new comment is added, we need to update the list of latest 2 comments ID for that post). Of course, for normal application, they are more likely to be read-heavy, so these optimizations seem reasonable.
 
 ## TODOs for production
@@ -63,4 +64,9 @@ With the scope of this project, some of the implementation details are skipped:
 We can easily run the whole with only a single command:
 ```bash
 docker compose up
+```
+
+To run the integration tests:
+```bash
+docker-compose run test
 ```
