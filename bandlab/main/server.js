@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const routes = require('./main/routes/routes.js');
-const db = require('./main/config/db.js');
+const routes = require('./routes/routes.js');
+const db = require('./config/db.js');
 
 const app = express();
 app.use(express.json());
@@ -25,4 +25,4 @@ routes(app);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-modules.exports = app;
+module.exports = app;
